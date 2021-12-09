@@ -1,6 +1,11 @@
-from PySide6 import QtWidgets
+import sys
+import inspect
+from PySide2 import QtWidgets
+from PySide2.QtCore import QWaitCondition
+from PySide2.QtGui import Qt #Cambiar a PySide2 en caso de error
 
-from ..main import Main
+from DccProyect.main import Main
+from DccProyect.interface_dcc import InterfaceDcc
 
 class DccWidget(QtWidgets.QWidget):
 
@@ -10,23 +15,59 @@ class DccWidget(QtWidgets.QWidget):
         self.__main = Main()
         
         self.setWindowTitle('Pipeline')
+        self.setFixedSize(300, 200)
         verticalLayout = QtWidgets.QVBoxLayout()
         self.setLayout(verticalLayout)
 
-        btnCreateSphere = QtWidgets.QPushButton('Crear Esfera')
-        btnCreateSphere.clicked.connect(self.__CreateSphere)
-        verticalLayout.addWidget(btnCreateSphere)
+        iFs =  inspect.getmembers(InterfaceDcc, predicate=inspect.isfunction)
+        InterfaceFunctions = [func[0] for func in iFs]
+        #print(InterfaceFunctions)
 
-        btnSaveScene = QtWidgets.QPushButton('Guardar Escena')
-        btnCreateSphere.clicked.connect(self.__SaveScene)
-        verticalLayout.addWidget(btnSaveScene)
+        # CREA LA CANTIDAD DE BOTONES EN BASE A LAS FUNCIONES
+        for funcName in InterfaceFunctions:
+            try:
+                btnName = ' '.join(funcName.split('_'))
+                btnFunction = self.__getattribute__(funcName)
 
-    def __CreateSphere(self):
-        name = QtWidgets.QInputDialog().getText(title='Name', label='Sphere name:')
-        self.__main.CreatePoly('sphere', name)
+                appBtn = QtWidgets.QPushButton(btnName)
+                appBtn.clicked.connect(btnFunction)
+                verticalLayout.addWidget(appBtn)
+            except AttributeError:
+                print( 'The method "{funcName}" does not exists in the UI' )
+                pass
+        
+        btnSaveMetadata = QtWidgets.QPushButton('Save Metadata')
+        btnSaveMetadata.clicked.connect(self.__Save_Metadata)
+        verticalLayout.addWidget(btnSaveMetadata)
+
+    def Create_Sphere(self):
+        name, option = QtWidgets.QInputDialog().getText(self, 'Poly Name', 'Sphere name:', QtWidgets.QLineEdit.Normal)
+        if option: 
+            self.__main.Create_Sphere(name)
+            print("Sphere Created")
+
+    def Create_Cube(self):
+        name, option = QtWidgets.QInputDialog().getText(self, 'Poly Name', 'Cube name:', QtWidgets.QLineEdit.Normal)
+        if option:
+            self.__main.Create_Cube(name)
+            print("Sphere Created")
+    
+    def Save_Scene(self):
+        name, nOption = QtWidgets.QInputDialog().getText(self, 'Save Scene', 'Scene name:', QtWidgets.QLineEdit.Normal)
+        if nOption:
+            path, pOption = QtWidgets.QInputDialog().getText(self, 'Save Scene', 'Scene path \n(Cancel for default):', QtWidgets.QLineEdit.Normal)
+            if not pOption: path = ""
+            self.__main.Save_Scene(path, name)
+            print("Scene Saved")
+    
+    def __Save_Metadata(self):
+        self.__main.Save_Metadata()
 
 def main():
-    pass
+    app = QtWidgets.QApplication()
+    widget = DccWidget()
+    widget.show()
+    sys.exit(app.exec_())
 
 if __name__ == "__main__":
     main()

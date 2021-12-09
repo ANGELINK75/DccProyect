@@ -10,7 +10,7 @@ class Shotgun:
             api_key = key
         )
 
-    def create_shot(self, name):
+    def Create_Shot(self, name):
         shot = self.__sg.find_one( 'Shot', ['code', 'is', name] )
         if not shot:
             
