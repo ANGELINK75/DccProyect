@@ -15,8 +15,4 @@ class InterfaceDcc(metaclass = abc.ABCMeta):
     def Save_Scene(self):
         pass
 
-    #@abc.abstractmethod
-    #def Save_Metadata(self):
-    #    pass
-
     pass

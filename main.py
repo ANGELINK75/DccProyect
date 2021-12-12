@@ -5,6 +5,7 @@ import json
 import random
 
 from . import factory
+#from . import shotgrid
 
 class ProyectoDDCError(Exception):
   pass
@@ -13,18 +14,29 @@ class Main:
 
   #Dentro de un estudio el path seria a 'C\\JobName\\ProyectName\\Secuences\\Shots'
     #Cambiar path antes de ejecutar
-  MAIN_FOLDER = "D:\\Desktop\\Trabajos\\UP\\9no Semestre\\Pipeline\\Dcc Scenes"
+  MAIN_FOLDER = "D:\\Desktop\\Trabajos\\UP\\9no_Semestre\\Pipeline\\Dcc_Scenes"
+  #MAIN_FOLDER = f"C:\\Users\\{ os.getenv('USERNAME', '') }\\Documents\\DccScenes"
 
   def __init__(self):
+    
+    print("-------------------------------------------")
+    print(self.MAIN_FOLDER)
 
+    #App and File information
     self.__scenePath = None;
     self.__sceneName = None;
     self.__interpreter = None;
 
+    #App Instances variables
     self.__factory = factory.Factory()
     self.__dccInstance = self.GetDdcInstance()()
 
-    self.__shotNumber = "014" # str(random.randrange(100,900))
+    #ShotGrid variables
+    self.__sequence = 'dev'
+    '''self.__sg = shotgrid.ShotGrid()'''
+
+    #Shot information
+    self.__shotNumber = str(random.randrange(100,900))
     self.__shotPath = os.path.join( self.MAIN_FOLDER, self.__shotNumber )
 
 
@@ -45,13 +57,13 @@ class Main:
     cube = self.__dccInstance.Create_Cube(name)
 
   def Save_Scene(self, path, name):
-    print(path)
+    #print(path)
     self.__sceneName = name
     if path == "": path = self.__shotPath
     self.__scenePath = self.__dccInstance.Save_Scene(path, name)
 
-    #elf.__path = self.__dccInstance.SaveScene(name)
-    #self.__sg.CreateShot( str(self.__shotNumber) )
+    #Connection to ShotGrid
+    '''self.__sg.Create_Shot( str(self.__shotNumber) )'''
 
   def Save_Metadata(self):
     if not self.__scenePath:
@@ -72,7 +84,7 @@ class Main:
       
       with open(metaFile, 'w+') as File:
         json.dump(fileData, File)
-      print('"{metaFile}" - Metadata File Saved')
+      print(f'Metadata File ({metaName}) Saved')
 
   def __Get_Metadata(self):
     data = {
@@ -86,6 +98,25 @@ class Main:
 
   def Export_Alembic(self, name):
     try:
-      self.__dccInstance.ExportAlembic(self.path, name)
+      self.__dccInstance.Export_Alembic(self.__shotPath, name)
+      return True
     except AttributeError:
-      print("The instance does not have this method")
+      print(f'The instance {self.__interpreter} does not have this method')
+      return False
+
+  def Make_Summary(self):
+    for root, directories, files in os.walk(self.MAIN_FOLDER, topdown=False):
+      for name in files:
+        print(os.path.join(root, name))
+      '''
+      for name in directories:
+        print(os.path.join(root, name))
+      '''
+  
+  def Render_Video(self, path, name):
+    try:
+      self.__dccInstance.Render_Video( self.__shotPath, name, path)
+      return True
+    except AttributeError:
+      print(f'The instance {self.__interpreter} does not have this method')
+      return False

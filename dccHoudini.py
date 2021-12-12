@@ -25,6 +25,9 @@ class Houdini(InterfaceDcc):
 
   def Save_Scene(self, folder, name):
     scenePath = os.path.join( folder, f'houdini\\{name}.hip')
-    hou.hipfile.save(file_name = scenePath)
-    print("Houdini File Saved")
+    dirName = os.path.dirname(scenePath)
+    if not os.path.exists( dirName ):
+      os.makedirs( dirName )
+    hou.hipFile.save(file_name = scenePath)
+    print(f'Houdini File ({name}.hip) Saved')
     return scenePath

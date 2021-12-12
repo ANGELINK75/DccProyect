@@ -1,8 +1,14 @@
 import sys
 import inspect
-from PySide2 import QtWidgets
-from PySide2.QtCore import QWaitCondition
-from PySide2.QtGui import Qt #Cambiar a PySide2 en caso de error
+
+try:
+    from PySide2 import QtWidgets
+    from PySide2.QtCore import QWaitCondition
+    from PySide2.QtGui import Qt
+except ImportError:
+    from PySide6 import QtWidgets
+    from PySide6.QtCore import QWaitCondition
+    from PySide6.QtGui import Qt
 
 from DccProyect.main import Main
 from DccProyect.interface_dcc import InterfaceDcc
@@ -33,12 +39,26 @@ class DccWidget(QtWidgets.QWidget):
                 appBtn.clicked.connect(btnFunction)
                 verticalLayout.addWidget(appBtn)
             except AttributeError:
-                print( 'The method "{funcName}" does not exists in the UI' )
+                print( f'The method "{funcName}" does not exists in the UI' )
                 pass
         
         btnSaveMetadata = QtWidgets.QPushButton('Save Metadata')
         btnSaveMetadata.clicked.connect(self.__Save_Metadata)
         verticalLayout.addWidget(btnSaveMetadata)
+
+        btnExportAlembic = QtWidgets.QPushButton('Export Alembic')
+        btnExportAlembic.clicked.connect(self.__Export_Alembic)
+        verticalLayout.addWidget(btnExportAlembic)
+
+        '''
+        btnSummary = QtWidgets.QPushButton('Make Summary')
+        btnSummary.clicked.connect(self.__Make_Summary)
+        verticalLayout.addWidget(btnSummary)
+        '''
+
+        btnVideo = QtWidgets.QPushButton('Render Video')
+        btnVideo.clicked.connect(self.__Render_Video)
+        verticalLayout.addWidget(btnVideo)
 
     def Create_Sphere(self):
         name, option = QtWidgets.QInputDialog().getText(self, 'Poly Name', 'Sphere name:', QtWidgets.QLineEdit.Normal)
@@ -50,7 +70,7 @@ class DccWidget(QtWidgets.QWidget):
         name, option = QtWidgets.QInputDialog().getText(self, 'Poly Name', 'Cube name:', QtWidgets.QLineEdit.Normal)
         if option:
             self.__main.Create_Cube(name)
-            print("Sphere Created")
+            print("Cube Created")
     
     def Save_Scene(self):
         name, nOption = QtWidgets.QInputDialog().getText(self, 'Save Scene', 'Scene name:', QtWidgets.QLineEdit.Normal)
@@ -62,6 +82,28 @@ class DccWidget(QtWidgets.QWidget):
     
     def __Save_Metadata(self):
         self.__main.Save_Metadata()
+
+    def __Export_Alembic(self):
+        name, nOption = QtWidgets.QInputDialog().getText(self, 'Export Alembic', 'Alembic name:', QtWidgets.QLineEdit.Normal)
+        if nOption:
+            path, pOption = QtWidgets.QInputDialog().getText(self, 'Export Alembic', 'Alembic path \n(Cancel for default):', QtWidgets.QLineEdit.Normal)
+            if not pOption: path = ""
+            if self.__main.Export_Alembic(name):
+                print("Alembic Saved")
+    
+    def __Make_Summary(self):
+        print("Making Summary")
+        self.__main.Make_Summary()
+
+    def __Render_Video(self):
+        name, nOption = QtWidgets.QInputDialog().getText(self, 'Nuke Render', 'Video name:', QtWidgets.QLineEdit.Normal)
+        if nOption:
+            path, pOption = QtWidgets.QInputDialog().getText(self, 'Nuke Render', 'Sequence Folder:', QtWidgets.QLineEdit.Normal)
+            if pOption or path == "":
+                if self.__main.Render_Video(path, name):
+                    print("Video Rendered")
+    
+
 
 def main():
     app = QtWidgets.QApplication()

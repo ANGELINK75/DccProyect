@@ -13,7 +13,7 @@ class Maya(InterfaceDcc):
 
   def Create_Sphere(self, name):
     nName = f'UP_{name}'
-    cmds.sphere(r=10, name=nName)
+    cmds.sphere(r=2, name=nName)
     
   def Create_Cube(self, name):
     nName = f'UP_{name}'
@@ -26,9 +26,19 @@ class Maya(InterfaceDcc):
       os.makedirs(dirPath)
     cmds.file(rename=scenePath)
     cmds.file(force=True, type='mayaAscii', save=True)
-    print("Maya File Saved")
+    print(f'Maya File ({name}.ma) Saved')
     return scenePath
 
   def Export_Alembic(self, folder, name):
-    alembicPath = os.path.join(folder, f'maya\\{name}.abc')
+    alembicPath = os.path.join( folder, f'maya\\{name}.abc')
+    print(f'Alembic file path --> {alembicPath}')
     dirPath = os.path.dirname(alembicPath)
+    if not os.path.exists(dirPath):
+      os.makedirs(dirPath)
+
+    startFrame = cmds.playbackOptions(q=True, min=True)
+    endFrame = cmds.playbackOptions(q=True, max=True)
+    command = "-frameRange "+ str(startFrame) + " " + str(endFrame) + " -dataFormat ogawa -file " + str(alembicPath)
+    cmds.AbcExport( j = command )
+
+    print(f'Alembic File ({name}.abc) Saved')

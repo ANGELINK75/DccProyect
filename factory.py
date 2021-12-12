@@ -1,5 +1,7 @@
-from .maya import Maya
-from .houdini import Houdini
+from .dccMaya import Maya
+from .dccHoudini import Houdini
+from .dccMayaPython import dccMayaPython
+from .dccNuke import Nuke
 
 class Factory:
 
@@ -7,10 +9,13 @@ class Factory:
         self.__factory = {
             'maya': Maya,
             'houdini': Houdini,
-            'nuke': None
+            'nuke': Nuke,
+            'python': dccMayaPython
         }
 
     def GetInstance(self, name):
-        if 'houdini' in name:
+        if ('happrentice' in name) or ('houdini' in name) :
             name = 'houdini'
+        if ('Nuke' in name) or ('nuke' in name) :
+            name = 'nuke'
         return self.__factory.get(name, None)
