@@ -105,13 +105,35 @@ class Main:
       return False
 
   def Make_Summary(self):
+
+    sumFile = self.MAIN_FOLDER + "\\Summary.json"
+
+    summary = []
     for root, directories, files in os.walk(self.MAIN_FOLDER, topdown=False):
       for name in files:
-        print(os.path.join(root, name))
-      '''
-      for name in directories:
-        print(os.path.join(root, name))
-      '''
+        path = os.path.join(root, name)
+        sPath = path.split('\\')
+        file = sPath[ len(sPath)-1 ]
+        fType = file.split('.')
+        type = fType[1]
+
+        program = ""
+        if(type == 'ma'): program = 'Maya'
+        if(type == 'hip'): program = 'Houdini'
+        if(type == 'nknc'): program = 'Nuke'
+        if(type == 'json'): program = 'Json'
+
+        fInfo = [file, path, program]
+        if program != "": summary.append(fInfo)
+    #print(summary)
+
+    fileData = {}
+    for s in summary:
+      fileData[ s[0] ] = [ s[1], s[2] ]
+    
+    with open(sumFile, 'w+') as File:
+      json.dump(fileData, File)
+    print(f'Summary Created')
   
   def Render_Video(self, path, name):
     try:

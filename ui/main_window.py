@@ -21,7 +21,7 @@ class DccWidget(QtWidgets.QWidget):
         self.__main = Main()
         
         self.setWindowTitle('Pipeline')
-        self.setFixedSize(300, 200)
+        self.setFixedSize(300, 300)
         verticalLayout = QtWidgets.QVBoxLayout()
         self.setLayout(verticalLayout)
 
@@ -50,11 +50,11 @@ class DccWidget(QtWidgets.QWidget):
         btnExportAlembic.clicked.connect(self.__Export_Alembic)
         verticalLayout.addWidget(btnExportAlembic)
 
-        '''
+        #'''
         btnSummary = QtWidgets.QPushButton('Make Summary')
         btnSummary.clicked.connect(self.__Make_Summary)
         verticalLayout.addWidget(btnSummary)
-        '''
+        #'''
 
         btnVideo = QtWidgets.QPushButton('Render Video')
         btnVideo.clicked.connect(self.__Render_Video)
