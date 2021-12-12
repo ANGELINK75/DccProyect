@@ -14,8 +14,8 @@ class Main:
 
   #Dentro de un estudio el path seria a 'C\\JobName\\ProyectName\\Secuences\\Shots'
     #Cambiar path antes de ejecutar
-  MAIN_FOLDER = "D:\\Desktop\\Trabajos\\UP\\9no_Semestre\\Pipeline\\Dcc_Scenes"
-  #MAIN_FOLDER = f"C:\\Users\\{ os.getenv('USERNAME', '') }\\Documents\\DccScenes"
+  #MAIN_FOLDER = "D:\\Desktop\\Trabajos\\UP\\9no_Semestre\\Pipeline\\Dcc_Scenes"
+  MAIN_FOLDER = f"C:\\Users\\{ os.getenv('USERNAME', '') }\\Documents\\DccScenes"
 
   def __init__(self):
     

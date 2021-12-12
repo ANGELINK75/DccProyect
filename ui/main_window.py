@@ -102,7 +102,6 @@ class DccWidget(QtWidgets.QWidget):
             if pOption or path == "":
                 if self.__main.Render_Video(path, name):
                     print("Video Rendered")
-    
 
 
 def main():
